@@ -15,7 +15,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestBody User user){
-        if("sai".equals(user.getUsername()) && "password".equals(user.getPassword())){
+        if("username".equals(user.getUsername()) && "password".equals(user.getPassword())){
             return jwtUtil.generateToken(user.getUsername());
         }
 
