@@ -1,11 +1,13 @@
 package com.jwt.security;
 
 import com.jwt.filters.CustomAuthenticationFilter;
+import com.jwt.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,6 +30,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
@@ -39,8 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("ROLE_USER")
                         .requestMatchers(HttpMethod.POST, "/api/user/save/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
-                .addFilter(customAuthenticationFilter)
-                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilter(customAuthenticationFilter);
 
         return http.build();
     }
