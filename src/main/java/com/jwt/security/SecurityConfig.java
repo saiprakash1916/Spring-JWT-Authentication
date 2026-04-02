@@ -1,6 +1,7 @@
 package com.jwt.security;
 
 import com.jwt.filters.CustomAuthenticationFilter;
+import com.jwt.filters.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
@@ -35,12 +37,12 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login/**", "/api/login/refresh/**").permitAll()
+                        .requestMatchers("/api/login/**", "/api/token/refresh/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("ROLE_USER")
                         .requestMatchers(HttpMethod.POST, "/api/user/save/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .addFilter(customAuthenticationFilter)
-                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
