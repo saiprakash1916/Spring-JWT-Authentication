@@ -1,4 +1,4 @@
-package com.jwt.api;
+package com.jwt.controller;
 
 import com.jwt.model.Role;
 import com.jwt.model.User;
@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class UserResource {
+public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
